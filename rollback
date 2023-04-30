@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# check for input
+if [ "$1" == "" ]
+	then
+	echo rollback -h or --help for help
+	exit
+fi
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]
+	then
+	echo rollback requires a valid snapshot number
+	exit
+fi
+
+# test snapshot ro is true
+btrfs property get -ts /.snapshots/$1/snapshot
+
+#set snapshot ro is false
+sudo btrfs property set -ts /.snapshots/$1/snapshot ro false
+
+# test snapshot ro is false
+btrfs property get -ts /.snapshots/$1/snapshot
+
+snapper-rollback $1
+
